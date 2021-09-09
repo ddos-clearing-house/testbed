@@ -21,20 +21,12 @@ directory in this repository) through SSH.
 processes). This is called directly from the Flask API in the docker container (see the dashboard directory in the 
 repository root). Like the entrypoint script, it uses SSH to run a command on each attack source machine.
 
-### Attacks
-
-| Attack type          | details                                                                                                                    |
-|----------------------| ----------------------------------------------------------------------------------------------------------------------------|
-| Fragmentation attack | Runs hping3 with the -f flag for fragmentation, -x to set the 'more fragments' IP header flag and -d 32 for 32 data bytes. |
-| TCP SYN flood attack | Runs hping3 with the -S flag to set the SYN flag in the TCP header                                                         |
-| UDP flood attack     | Runs hping3 with the --udp flag to send UDP packets.                                                                       |
-
 ## Attack source machines
 
 Each attack source machine should be configured to have the following:
 - hping3 installed (`sudo apt install hping3`)
 - a user named _admin_
-- /home/admin/authorized_keys with the ssh key of the dashboard server to allow login with password from the dashboard 
+- /home/admin/.ssh/authorized_keys containing the public ssh key of the dashboard server to allow ssh login without password from the dashboard 
   server
 - Make sure _admin_ can run hping3 (`admin$ sudo chmod u+x /usr/sbin/hping3 && ln -s /usr/sbin/hping3 /usr/bin/hping3`)
 - The contents of this directory should be executable by _admin_ in `/home/admin/attacks`
