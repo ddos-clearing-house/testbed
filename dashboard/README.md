@@ -8,15 +8,17 @@ target machine (located in a test network which is not critical to operations).
 
 ## Documentation
 The dashboard is a Flask application with a Flask RESTful API which functions as the interface between the dashboard
-and attack scripts. The website is hosted in docker containers using docker-compose. The compose configuration lists
+and attack script. The website is hosted in docker containers using docker-compose. The docker-compose configuration lists
 the following services:
-- flask: the Flask application with the dashboard and API
+- flask: the Flask application with the dashboard website and API
 - nginx: the nginx webserver
-- certbot: ensures validity of the SSL certificate
+- certbot: create SSL certs and ensures validity of the SSL certificates
 - ipv6nat: helper container to allow IPv6 connections. Assigns an IPv6 address to each container.
 
-Make sure docker and docker-compose are installed on the system. After setting everything up, cd to this directory and 
+Make sure docker and docker-compose are installed and updated on the system. After setting up docker(-compose), `cd` to this directory and 
 run `docker-compose up -d --build`.
+
+NOTE: currently, the domain name is set to ddosclearinghouse.eu. To use a different domainname, point its DNS records to your server and change the domainname in [this file](/dashboard/flask/app/__init__.py).
 
 ### Flask
 The entrypoint to the Flask application is [run.py](/flask/run.py). The application is served with uWSGI using 
