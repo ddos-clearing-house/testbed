@@ -1,8 +1,7 @@
-#### Notice: this repository is currently used for the virtual pilot of the DDoS Clearing House. To read about the DDoS Clearing House itself, read [this readme](README-about-DDOS-CH.md).
+# DDoS Clearing House distributed testbed
 
-# DDoS Clearing House virtual pilot
-
-This project contains the setup for a simulated pilot between the hosting partners of a DDoS Clearing House. 
+This project contains the setup for a simulated pilot between the hosting partners of a DDoS Clearing House. \
+For this purpose we have developed a testbed on which we can pilot the Clearing House
 
 
 ### [Dashboard](/dashboard)
