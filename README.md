@@ -6,9 +6,9 @@ For this purpose we have developed a testbed on which we can pilot the Clearing 
 
 ### [Dashboard](/dashboard)
 
-The dashboard is a Flask application on which partners can initiate (and stop) a simulated attack on themselves. It is hosted in docker containers using docker-compose. See the readme in this directory for more information and instructions.
+The dashboard is a Flask application on which partners can initiate (and stop) a simulated attack on themselves. It is hosted in docker containers using docker-compose. See the [readme](dashboard/README.md) for more information and instructions.
 
 
 ### [Attack scripts](/attack-scripts)
 
-This directory contains scripts for various attacks (using hping3), as well as an entrypoint for the dashboard. Its contents should be available on an attack source machine at `/home/admin/attacks`.
+This directory contains scripts to start and stop attack traffic (using hping3). Its contents should be available on an attack source machine at `/home/admin/attacks`. Read the [readme](attack-scripts/README.md)
