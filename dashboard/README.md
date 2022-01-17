@@ -18,21 +18,21 @@ the following services:
 Make sure docker and docker-compose are installed and updated on the system. After setting up docker(-compose), `cd` to this directory and 
 run `docker-compose up -d --build`.
 
-NOTE: currently, the domain name is set to ddosclearinghouse.eu. To use a different domainname, point its DNS records to your server and change the domainname in [this file](/dashboard/flask/app/__init__.py).
+NOTE: currently, the domain name is set to ddosclearinghouse.eu. To use a different domainname, point its DNS records to your server and change the domainname in [this file](flask/app/__init__.py).
 
 ### Flask
-The entrypoint to the Flask application is [run.py](/flask/run.py). The application is served with uWSGI using 
-instructions in [app.ini](/flask/app.ini).\
+The entrypoint to the Flask application is [run.py](flask/run.py). The application is served with uWSGI using 
+instructions in [app.ini](flask/app.ini).\
 The application consists of a generic Flask application which hosts the webpages (home page and dashboards for each
 partner), and a Flask RESTful API, which serves as an interface between the Flask application and the attack scripts.
-[app/](/flask/app) contains one module for the website and one for the api. The [\_\_init__.py](/flask/app/__init__.py)
+[app/](/flask/app) contains one module for the website and one for the api. The [\_\_init__.py](flask/app/__init__.py)
 binds these two to the www and api subdomains respectively. 
 
 From the dashboard, the start and stop buttons send a request to the API with the given instructions though a simple 
-XMLHttpRequest in [the dashboard's javascript](/flask/app/website/static/js/content.js).
+XMLHttpRequest in [the dashboard's javascript](flask/app/website/static/js/content.js).
 
 The API runs the entrypoint script (located in the attack-scripts directory in this repository) from its end points
-defined in [app/api/resources](/flask/app/api/resources.py). The API passes the required arguments to the entrypoint, 
+defined in [app/api/resources](flask/app/api/resources.py). The API passes the required arguments to the entrypoint, 
 which starts the attack script on the attack source machines (defined by $SOURCE_IPS in [dashboard.env](dashboard.env.sample))
 
 #### dashboard.env
@@ -43,7 +43,7 @@ application (www.domain/partner). remove the suffix `.sample` from the provided 
 
 ### Nginx
 The application is secured with IP-whitelisting and HTTP Basic authentication in the 
-[nginx config](/nginx/nginx.conf). For each partner, create a `location` block in the configuration. Copy an existing
+[nginx config](nginx/nginx.conf). For each partner, create a `location` block in the configuration. Copy an existing
 one as a template. Search and replace the domainname `ddosclearinghouse.eu` if you will use a different domain.
 
 ### SSL/TLS certificate (certbot)
