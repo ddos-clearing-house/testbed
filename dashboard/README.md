@@ -43,7 +43,7 @@ application (www.domain/partner). remove the suffix `.sample` from the provided 
 
 ### Nginx
 The application is secured with IP-whitelisting and HTTP Basic authentication in the 
-[nginx config](nginx/nginx.conf). For each partner, create a `location` block in the configuration. Copy an existing
+[nginx config](nginx/nginx.conf.sample) (remove .sample). For each partner, create a `location` block in the configuration. Copy an existing
 one as a template. Search and replace the domainname `ddosclearinghouse.eu` if you will use a different domain.
 
 ### SSL/TLS certificate (certbot)
@@ -54,7 +54,7 @@ Copy the resulting /data/certbot directory to this directory (such that /certbot
 The dashboard should be ran on a linux system by user "admin" (which should be added to the docker group). 
 The attack scripts in `attack-scripts` in the root of the repository should be available in `/home/admin/attacks`.
 
-Create a directory /home/admin/ips. For each partner defined in [dashboard.env](dashboard.env.sample), create a file
+Create a directory /home/admin/ips. For each partner defined in [dashboard.env](dashboard.env.sample) (remove .sample), create a file
 with the name of that partner (lowercase, no extension) which contains only the IP address of that partner.\
 E.g.: `mkdir ~/ips ; echo -n "192.168.0.100" > ~/ips/sidnlabs`
 
