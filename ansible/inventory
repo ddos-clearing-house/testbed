@@ -1,0 +1,5 @@
+[attackers]
+ddosch-vp[1:5].sidnlabs.nl
+
+[attackers:vars]
+ansible_user=ansible
