@@ -39,6 +39,11 @@ div#red {
     min-height: calc(100vh - 50px - 3rem)
 }
 
+#content-col{
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
 .footer-bar {
     background-color: #f0f0f0;
     font-family: 'Lato', sans-serif;
@@ -52,6 +57,11 @@ div#red {
     height: 3rem;
 }
 
-td{
-    padding: 5px 10px 5px 5px;
+.form-field{
+    padding: 5px 10px 3px 3px;
+}
+
+button#to-confirm{
+    margin-left: 6px;
+    margin-top: 5px;
 }

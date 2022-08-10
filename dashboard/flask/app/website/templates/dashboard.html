@@ -20,60 +20,39 @@
     <!-- Alert banners -->
     <div class="row" style="margin-top: -20px">
         <div class="col-md-2"></div>
-        <div class="col-md-8 collapse" id="alert-duration">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="col-md-8 collapse" id="alert-parameter">
+            <div class="alert alert-danger alert-dismissible fade show" id="alert-content" role="alert">
                 <strong>Invalid duration:</strong> The duration in seconds should be between 1 and 300.
-            </div>
-        </div>
-        <div class="col-md-8 collapse" id="alert-port">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Invalid port:</strong> The destination post should be between 1 and 65535.
-            </div>
-        </div>
-        <div class="col-md-8 collapse" id="alert-busy">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Busy:</strong> traffic is currently being sent.
             </div>
         </div>
         <div class="col-md-2"></div>
     </div>
 
     <div class="row">
-        <div class="col-md-8">
+
+        <!-- Attack details -->
+        <div class="col-md-9">
             <div class="content-block" id="green">
                 <h4 style="width: 100%; text-align: center; margin-bottom: 30px">
-                    Start a simulated attack on {{ partner|upper }}
+                    Orchestrate test traffic for {{ partner|upper }}
                 </h4>
                 <form id="start-form">
-                    <table>
-                        <tr>
-                            <td>
-                                <label for="attacks">Attack type:</label>
-                            </td>
-                            <td>
-                                <select id="attacks" name="attack" required>
-                                    <option value="udp" selected>UDP Flood</option>
-                                    <option value="tcp">TCP flood</option>
-                                    <option value="frag">Fragmentation Attack</option>
-                                    <option value="syn">Syn Flood</option>
+                    <div class="row">
+                        <!-- Left column of attack details -->
+                        <div class="col-lg-5" style="border-right: 2px solid lightgrey">
+                            <input type="hidden" id="target" name="target" value="{{ partner }}">
+                            <div class="form-floating form-field">
+                                <select class="form-select" id="protocol" form="start-form" name="protocol">
+                                    <option value="tcp" selected>TCP</option>
+                                    <option value="udp">UDP</option>
+                                    <option value="icmp">ICMP</option>
+                                    <option value="rawip">Raw IP</option>
                                 </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="duration">Duration in seconds:</label>
-                            </td>
-                            <td>
-                                <input type="number" id="duration" name="duration" min="0" max="300" value="20"
-                                       required>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="speed">Traffic speed:</label>
-                            </td>
-                            <td>
-                                <select id="speed" name="speed" required>
+                                <label for="protocol">Highest protocol</label>
+                            </div>
+
+                            <div class="form-floating form-field">
+                                <select class="form-select" id="speed" name="speed" form="start-form">
                                     <option value="u1000000">1</option>
                                     <option value="u100000" selected>10</option>
                                     <option value="u10000">100</option>
@@ -81,25 +60,103 @@
                                     {#                        <option value="u10">10,000</option>#}
                                     {#                        <option value="u1">100,000</option>#}
                                     {#                        <option value="u0">fastest</option>#}
-                                </select> Packets per second
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="port">Destination port:</label>
-                            </td>
-                            <td>
-                                <input type="number" id="port" name="port" min="1" max="65535" value="80" required>
-                            </td>
-                        </tr>
-                    </table>
+                                </select>
+                                <label for="protocol">Packets per second</label>
+                            </div>
+
+                            <div class="form-floating form-field">
+                                <input type="number" class="form-control tcp udp rawip" id="port" name="port" min="1" max="65535"
+                                       value="80" form="start-form">
+                                <label for="port">Destination port</label>
+                            </div>
+                            <div class="form-floating form-field">
+                                <input type="number" class="form-control tcp udp rawip" id="data" name="data" min="0" max="1000"
+                                       value="0" form="start-form">
+                                <label for="data">Packet data bytes</label>
+                            </div>
+
+                            <div class="form-group form-field">
+                                <label for="duration">Duration: <span id="durationValue">10 seconds</span></label>
+                                <input type="range" class="form-control-range" id="duration" min="1" max="120" step="1"
+                                       value="10" style="width:100%" form="start-form" name="duration">
+                            </div>
+                        </div>
+                        <!-- Right side attack details -->
+                        <div class="col-lg-7">
+                            <div id="ip-details">
+                                <div class="form-check">
+                                    <input type="checkbox" id="fragment" class="form-check-input rawip tcp udp" form="start-form" name="fragment">
+                                    <label for="fragment" class="form-check-label">
+                                        Fragment packets
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="more-frag" class="form-check-input rawip tcp udp" form="start-form" name="more_frag">
+                                    <label for="more-frag" class="form-check-label">
+                                        More fragments flag
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="no-frag" class="form-check-input rawip tcp udp" form="start-form" name="no_frag">
+                                    <label for="no-frag" class="form-check-label">
+                                        No more fragments flag
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="raw-ip-details">
+                                <div class="form-floating form-field" id="input-ip-proto">
+                                    <input type="number" class="form-control rawip" id="ip-proto" name="ip_proto" min="0"
+                                           max="143" value="5" form="start-form">
+                                    <label for="ip-proto">IP Protocol nr</label>
+                                </div>
+                            </div>
+                            <div id="icmp-details">
+                                <div class="form-floating form-field">
+                                    <input type="number" class="form-control icmp" id="icmp-type" name="icmp_type" min="0"
+                                           max="18" value="8" form="start-form">
+                                    <label for="icmp-type">ICMP type</label>
+                                </div>
+                                <div class="form-floating form-field">
+                                    <input type="number" class="form-control icmp" id="icmp-code" name="icmp_code" min="0"
+                                           max="15" value="0" form="start-form">
+                                    <label for="icmp-code">ICMP code</label>
+                                </div>
+                            </div>
+                            <div id="udp-details">
+
+                            </div>
+                            <div id="tcp-details">
+                                <div class="form-check">
+                                    <input type="checkbox" id="syn" class="form-check-input tcp" form="start-form" name="syn">
+                                    <label for="syn" class="form-check-label">
+                                        SYN flag
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="ack" class="form-check-input tcp" form="start-form" name="ack">
+                                    <label for="ack" class="form-check-label">
+                                        ACK flag
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="fin" class="form-check-input tcp" form="start-form" name="fin">
+                                    <label for="fin" class="form-check-label">
+                                        FIN flag
+                                    </label>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
                 </form>
                 <button type="button" class="btn btn-success" id="to-confirm">
                     Next
                 </button>
             </div>
         </div>
-        <div class="col-md-4">
+
+        <!-- Stop traffic -->
+        <div class="col-md-3">
             <div class="row">
                 <div class="col-md-12">
                     <div class="content-block" id="red" style="text-align: center">
@@ -114,14 +171,14 @@
                 <div class="col-md-12 collapse" id="count-down-alert">
                     <div class="alert alert-success fade show" id="disclaimer" role="alert">
                         <h6>
-                           <strong>Sending traffic... </strong> <span id="count-down"></span> more seconds.
+                            <strong>Sending traffic... </strong> <span id="count-down"></span> more seconds.
                         </h6>
                     </div>
                 </div>
                 <div class="col-md-12 collapse" id="staffic-stopped-alert">
                     <div class="alert alert-danger fade show" id="disclaimer" role="alert" style="text-align: center">
                         <h6>
-                           <strong>Traffic stopped</strong>
+                            <strong>Traffic stopped</strong>
                         </h6>
                     </div>
                 </div>
@@ -139,48 +196,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <table>
-                        <tr>
-                            <td>
-                                Target:
-                            </td>
-                            <td>
-                                {{ partner|upper }}
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Attack type:
-                            </td>
-                            <td>
-                                <span id="modal-attack"></span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Duration:
-                            </td>
-                            <td>
-                                <span id="modal-duration"></span> seconds
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Traffic speed:
-                            </td>
-                            <td>
-                                <span id="modal-speed"></span> packets per second
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Destination port:
-                            </td>
-                            <td>
-                                <span id="modal-port"></span>
-                            </td>
-                        </tr>
+                    <table id="modal-table">
                     </table>
                     <br>Five identical machines will <i>each</i> send this traffic to the target.
                     <br>You will be prompted for your credentials again on start.

@@ -8,31 +8,29 @@ target machine (located in a test network which is not critical to operations).
 
 ## Documentation
 The dashboard is a Flask application with a Flask RESTful API which functions as the interface between the dashboard
-and attack script. The website is hosted in docker containers using docker-compose. The docker-compose configuration lists
+and attack scripts. The website is hosted in docker containers using docker-compose. The compose configuration lists
 the following services:
-- flask: the Flask application with the dashboard website and API
+- flask: the Flask application with the dashboard and API
 - nginx: the nginx webserver
-- certbot: create SSL certs and ensures validity of the SSL certificates
+- certbot: ensures validity of the SSL certificate
 - ipv6nat: helper container to allow IPv6 connections. Assigns an IPv6 address to each container.
 
-Make sure docker and docker-compose are installed and updated on the system. After setting up docker(-compose), `cd` to this directory and 
+Make sure docker and docker-compose are installed on the system. After setting everything up, cd to this directory and 
 run `docker-compose up -d --build`.
 
-NOTE: currently, the domain name is set to ddosclearinghouse.eu. To use a different domainname, point its DNS records to your server and change the domainname in [this file](flask/app/__init__.py).
-
 ### Flask
-The entrypoint to the Flask application is [run.py](flask/run.py). The application is served with uWSGI using 
-instructions in [app.ini](flask/app.ini).\
+The entrypoint to the Flask application is [run.py](/flask/run.py). The application is served with uWSGI using 
+instructions in [app.ini](/flask/app.ini).\
 The application consists of a generic Flask application which hosts the webpages (home page and dashboards for each
 partner), and a Flask RESTful API, which serves as an interface between the Flask application and the attack scripts.
-[app/](/flask/app) contains one module for the website and one for the api. The [\_\_init__.py](flask/app/__init__.py)
+[app/](/flask/app) contains one module for the website and one for the api. The [\_\_init__.py](/flask/app/__init__.py)
 binds these two to the www and api subdomains respectively. 
 
 From the dashboard, the start and stop buttons send a request to the API with the given instructions though a simple 
-XMLHttpRequest in [the dashboard's javascript](flask/app/website/static/js/content.js).
+XMLHttpRequest in [the dashboard's javascript](/flask/app/website/static/js/content.js).
 
 The API runs the entrypoint script (located in the attack-scripts directory in this repository) from its end points
-defined in [app/api/resources](flask/app/api/resources.py). The API passes the required arguments to the entrypoint, 
+defined in [app/api/resources](/flask/app/api/resources.py). The API passes the required arguments to the entrypoint, 
 which starts the attack script on the attack source machines (defined by $SOURCE_IPS in [dashboard.env](dashboard.env.sample))
 
 #### dashboard.env
@@ -43,7 +41,7 @@ application (www.domain/partner). remove the suffix `.sample` from the provided 
 
 ### Nginx
 The application is secured with IP-whitelisting and HTTP Basic authentication in the 
-[nginx config](nginx/nginx.conf.sample) (remove .sample). For each partner, create a `location` block in the configuration. Copy an existing
+[nginx config](/nginx/nginx.conf). For each partner, create a `location` block in the configuration. Copy an existing
 one as a template. Search and replace the domainname `ddosclearinghouse.eu` if you will use a different domain.
 
 ### SSL/TLS certificate (certbot)
@@ -54,7 +52,7 @@ Copy the resulting /data/certbot directory to this directory (such that /certbot
 The dashboard should be ran on a linux system by user "admin" (which should be added to the docker group). 
 The attack scripts in `attack-scripts` in the root of the repository should be available in `/home/admin/attacks`.
 
-Create a directory /home/admin/ips. For each partner defined in [dashboard.env](dashboard.env.sample) (remove .sample), create a file
+Create a directory /home/admin/ips. For each partner defined in [dashboard.env](dashboard.env.sample), create a file
 with the name of that partner (lowercase, no extension) which contains only the IP address of that partner.\
 E.g.: `mkdir ~/ips ; echo -n "192.168.0.100" > ~/ips/sidnlabs`
 
