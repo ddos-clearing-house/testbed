@@ -9,30 +9,59 @@
 
 body {
     margin-top: 50px;
-    background-color: #f8f8f8;
-    background-image: url('/static/media/concordia-inverse-logo.png');
+    background-color: #2b2b2b;
+    color: #f0f0f0;
+    background-image: url('/static/media/concordia-inverse-logo-dark.png');
     background-repeat: repeat;
     background-attachment: fixed;
     min-height: calc(100vh - 50px - 3rem)
 }
 
+select, input {
+    background-color: #2b2b2b !important;
+    color: #f0f0f0 !important;
+}
+
+select:disabled, input:disabled {
+    background-color: #2b2b2b !important;
+    color: #3f3f3f !important;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
 .content-block {
     width: 100%;
     padding: 20px;
     margin-bottom: 30px;
-    background-color: #ebebeb;
+    background-color: #303030;
     border-radius: 5px;
-    border-top: 7px solid darkslategray;
+    border-top: 7px solid #94dcdc;
     font-family: jetBrainsMono, sans-serif;
     display: inline-block;
 }
 
+div.modal-content {
+    background-color: #2b2b2b !important;
+    color: #f0f0f0 !important;
+}
+
 div#green {
-    border-top: 7px solid darkgreen;
+    border-top: 7px solid #70d070;
 }
 
 div#red {
-    border-top: 7px solid darkred;
+    border-top: 7px solid #e06e6e;
 }
 
 #content-wrap {
@@ -45,9 +74,9 @@ div#red {
 }
 
 .footer-bar {
-    background-color: #f0f0f0;
+    background-color: #303030;
     font-family: 'Lato', sans-serif;
-    color: #17161a;
+    color: #f0f0f0;
     text-align: center;
     padding-top: 10px;
     padding-bottom: 5px;

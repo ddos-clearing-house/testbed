@@ -1,0 +1,68 @@
+---
+- name: Set up attacker server
+  hosts: attackers
+  become: true
+
+  handlers:
+    - import_tasks: handlers/handlers.yml
+
+  tasks:
+    - include_vars: vars/ips.yaml
+
+    # Setup UFW
+    - import_tasks: tasks/ufw.yml
+
+    # Limit egress bandwidth to 5Mbit/s
+    - import_tasks: tasks/tc.yml
+
+    # Install requirements and tools
+    - name: Ensure hping3 is installed
+      apt:
+        name: hping3
+        state: present
+
+    - name: Ensure GoldenEye is installed and up to date
+      git:
+        repo: https://github.com/jseidl/GoldenEye.git
+        dest: /opt/goldeneye
+        clone: true
+        update: true
+
+    - name: Ensure Slowloris is installed and up to date
+      git:
+        repo: https://github.com/gkbrk/slowloris.git
+        dest: /opt/slowloris
+        clone: true
+        update: true
+
+    - name: Ensure Golang is installed
+      apt:
+        name: golang-go
+        state: present
+
+    - name: Ensure HULK is cloned and up to date
+      git:
+        repo: https://github.com/grafov/hulk.git
+        dest: /opt/hulk
+        clone: true
+        update: true
+
+    - name: Ensure HULK is built
+      shell: "cd /opt/hulk && go build"
+    - name: Ensure build-essential (gcc make) is installed
+      apt:
+        name: build-essential
+        state: present
+
+    - name: Ensure LOIC-CLI is cloned and up to date
+      git:
+        repo: https://github.com/Amitie10g/loic-cli
+        dest: /opt/loic
+        clone: true
+        update: true
+
+    - name: Ensure LOIC-CLI is installed
+      make:
+        chdir: /opt/loic
+
+

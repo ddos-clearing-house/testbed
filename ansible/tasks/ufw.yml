@@ -1,0 +1,24 @@
+---
+- name: Ensure ufw is installed
+  apt:
+    name: ufw
+    state: present
+
+- name: Ensure correct UFW default policies
+  ufw:
+    policy: "{{ item.policy }}"
+    direction: "{{ item.direction }}"
+  loop:
+    - policy: allow
+      direction: outgoing
+    - policy: deny
+      direction: incoming
+
+- name: Ensure UFW allows SSH from IPs
+  ufw:
+    rule: allow
+    name: OpenSSH
+    from_ip: "{{ item.ip }}"
+    comment: "{{ item.comment }}"
+  loop: "{{ master_ips }}"
+  notify: enable ufw

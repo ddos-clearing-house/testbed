@@ -7,27 +7,19 @@ async def command(cmd):
     """
     Execute a command on the system asynchronously
     """
-    proc = await asyncio.create_subprocess_shell(
+    await asyncio.create_subprocess_shell(
         cmd,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE)
 
-    # # Wait for the script to complete and print its outputs. (for testing purposes)
-    # stdout, stderr = await proc.communicate()
-    #
-    # print(f'[{cmd!r} exited with {proc.returncode}]')
-    # if stdout:
-    #     print(f'[stdout]\n{stdout.decode()}')
-    # if stderr:
-    #     print(f'[stderr]\n{stderr.decode()}')
 
-
-class Start(Resource):
+class StartHping(Resource):
     @staticmethod
     def post(partner: str):
         if partner not in os.getenv('PARTNERS').split(':'):
             return {'Error': f'partner {partner} is not in the list of partners in this pilot.'}, 400
 
+        target = os.getenv(f'{partner.upper()}_TARGET')
         protocol_options = {'tcp': '', 'udp': '--udp', 'icmp': '--icmp', 'rawip': '--rawip'}
         speed_options = ['u100000', 'u10000', 'u1000', 'u100', 'u10', 'u1', 'u0']
 
@@ -107,17 +99,68 @@ class Start(Resource):
         if args.fin is not None:
             flags.append('--fin')
 
-        print(" ".join(flags))
-        # return {'message': 'DEBUG'}, 200
+        flags = ' '.join(flags)
+        print(flags)
 
         try:
-            instructions = f"/bin/bash /attacks/entrypoint \"{' '.join(flags)}\" {partner} {args.duration}"
+            instructions = f"""ansible-playbook -i /ansible/inventory /ansible/hping.yml --extra-vars "duration={args.duration} target={target} flags='{flags}'" """
             print(f"Running: {instructions}")
             asyncio.run(command(instructions))
         except KeyError:
             return {'Error': 'Invalid attack type.'}, 400
 
-        return {'message': f'Started hping3 with flags {" ".join(flags)}!'}, 200
+        return {'message': f'Started hping3 with flags {flags}!'}, 200
+
+
+class StartPlaybook(Resource):
+    @staticmethod
+    def start_command(partner: str, playbook: str, protocol: str = ''):
+        if partner not in os.getenv('PARTNERS').split(':'):
+            return {'Error': f'partner {partner} is not in the list of partners in this pilot.'}, 400
+
+        target = os.getenv(f'{partner.upper()}_TARGET')
+        # Parse arguments
+        parser = reqparse.RequestParser()
+        parser.add_argument('duration', type=int, required=True)
+        args = parser.parse_args()
+        print(args)
+
+        if type(args.duration) != int or args.duration > 120 or args.duration < 1:
+            return {'Error': 'Duration must be a positive integer under 120.'}, 400
+
+        try:
+            instructions = f'ansible-playbook -i /ansible/inventory /ansible/{playbook} --extra-vars ' \
+                           f'"duration={args.duration} target={protocol}{target}" '
+            print(f"Running: {instructions}")
+            asyncio.run(command(instructions))
+        except KeyError:
+            return {'Error': 'Invalid attack type.'}, 400
+
+        return {'message': f'Started GoldenEye'}, 200
+
+
+class StartGoldenEye(StartPlaybook):
+    @staticmethod
+    def post(partner: str):
+        StartPlaybook.start_command(partner=partner, playbook='goldeneye.yml', protocol='http://')
+
+
+class StartHULK(StartPlaybook):
+    @staticmethod
+    def post(partner: str):
+        StartPlaybook.start_command(partner=partner, playbook='hulk.yml', protocol='http://')
+
+
+class StartLOIC(StartPlaybook):
+    @staticmethod
+    def post(partner: str):
+        StartPlaybook.start_command(partner=partner, playbook='loic.yml', protocol='')
+
+
+class StartSlowloris(StartPlaybook):
+    @staticmethod
+    def post(partner: str):
+        StartPlaybook.start_command(partner=partner, playbook='slowloris.yml')
 
 
 class Stop(Resource):
@@ -126,5 +169,5 @@ class Stop(Resource):
         if partner not in os.getenv('PARTNERS').split(':'):
             return {'error': f'partner {partner} is not in the list of partners in this pilot.'}, 400
 
-        asyncio.run(command("/bin/bash /attacks/stop"))
+        asyncio.run(command("kill $(ps aux | grep '[A]nsiballZ_command' | awk '{print $2}')"))
         return {'message': f'Stopped!'}, 200
