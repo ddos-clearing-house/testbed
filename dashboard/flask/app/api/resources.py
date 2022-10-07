@@ -129,7 +129,7 @@ class StartPlaybook(Resource):
             return {'Error': 'Duration must be a positive integer under 120.'}, 400
 
         try:
-            instructions = f'ansible-playbook -i /ansible/inventory /ansible/{playbook} --extra-vars ' \
+            instructions = f'ansible-playbook -i /ansible/inventory /ansible/attacks/{playbook} --extra-vars ' \
                            f'"duration={args.duration} target={protocol}{target}" '
             print(f"Running: {instructions}")
             asyncio.run(command(instructions))
@@ -154,7 +154,7 @@ class StartHULK(StartPlaybook):
 class StartLOIC(StartPlaybook):
     @staticmethod
     def post(partner: str):
-        StartPlaybook.start_command(partner=partner, playbook='loic.yml', protocol='')
+        StartPlaybook.start_command(partner=partner, playbook='loic.yml')
 
 
 class StartSlowloris(StartPlaybook):
