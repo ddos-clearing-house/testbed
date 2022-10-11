@@ -103,7 +103,12 @@ class StartHping(Resource):
         print(flags)
 
         try:
-            instructions = f"""ansible-playbook -i /ansible/inventory /ansible/hping.yml --extra-vars "duration={args.duration} target={target} flags='{flags}'" """
+            if partner == 'demo':
+                prime_target = f"""ansible-playbook -i /ansible/inventory /ansible/prime_target.yml --extra-vars "duration={args.duration + 5}" """
+                print("Priming target")
+                asyncio.run(command(prime_target))
+
+            instructions = f"""ansible-playbook -i /ansible/inventory /ansible/attacks/hping.yml --extra-vars "duration={args.duration} target={target} flags='{flags}'" """
             print(f"Running: {instructions}")
             asyncio.run(command(instructions))
         except KeyError:
@@ -129,6 +134,11 @@ class StartPlaybook(Resource):
             return {'Error': 'Duration must be a positive integer under 120.'}, 400
 
         try:
+            if partner == 'demo':
+                prime_target = f"""ansible-playbook -i /ansible/inventory /ansible/prime_target.yml --extra-vars "duration={args.duration + 5}" """
+                print("Priming target")
+                asyncio.run(command(prime_target))
+
             instructions = f'ansible-playbook -i /ansible/inventory /ansible/attacks/{playbook} --extra-vars ' \
                            f'"duration={args.duration} target={protocol}{target}" '
             print(f"Running: {instructions}")

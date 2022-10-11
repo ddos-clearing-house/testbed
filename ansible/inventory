@@ -1,13 +1,13 @@
 [attackers]
 ddosch-node[1:5].sidnlabs.nl
 
-[test]
-ddosch-node1.sidnlabs.nl
+[demo_target]
+ddos.blue
 
 [attackers:vars]
 ansible_user=ansible
 ansible_python_interpreter=/usr/bin/python3
 
-[test:vars]
-ansible_user=ansible
+[demo_target:vars]
+ansible_user=target
 ansible_python_interpreter=/usr/bin/python3
