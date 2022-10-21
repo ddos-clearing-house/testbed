@@ -33,7 +33,8 @@ The testbed uses Ansible to setup the attack nodes and to provide them the instr
 The attack node setup is done using Ansible; follow this instructions in the corresponding [README](ansible/README.md).
 
 ## Adding a partner (user) on the testbed
-...
+Follow the instructions in the [dashboard's README](dashboard/README.md).
 
 ## Adding a new attack
-...
+1. Follow instructions for the [ansible part](ansible/README.md#Adding-a-new-attack-(Ansible-part)).
+2. Follow instructions for the [dashboard part](dashboard/README.md#Adding-a-new-attack-(dashboard-part)). 

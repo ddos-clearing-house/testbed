@@ -64,7 +64,7 @@ Remember to bring down the docker containers when you're done.
 4. Restart the dashboard (`docker-compose up -d --build`)
 5. If needed, force-recrease the Nginx container (`docker-compose restart nginx`)
 
-## Adding a new attack
+## Adding a new attack (dashboard part)
 1. Setup the ansible playbook following the instructions in the corresponding [README](../ansible/README.md#Adding-a-new-attack-(Ansible-part)).
 2. !! I'm planning on simplifying the next part at some point.
 3. Creating the API endpoint
