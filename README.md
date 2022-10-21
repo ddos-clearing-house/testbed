@@ -18,15 +18,21 @@ The dashboard is a Flask application on which partners can initiate (and stop) a
 It is hosted in docker containers using docker-compose. 
 See the [readme](dashboard/README.md) for more information and instructions.
 
-## Attack nodes
+## 2. Attack nodes
 
-We make use of 5 small VMs located across the world to send DDoS traffic to a specified target on the testbed. The nodes 
+We use 5 small VMs located across the world to send DDoS traffic to a specified target on the testbed. The nodes 
 are set up and instructed using ansible. See the [ansible directory](/ansible) for the set up scripts and attack commands.
 
-## Ansible
-...
+## 3. Ansible
 
-## Adding a partner on the testbed
+[Ansible](https://www.ansible.com/) is a tool used mainly to automate the deployment and instruction of multiple systems simultaneously. 
+The testbed uses Ansible to setup the attack nodes and to provide them the instructions to start or stop an attack.
+
+## Setup attack nodes
+
+The attack node setup is done using Ansible; follow this instructions in the corresponding [README](ansible/README.md).
+
+## Adding a partner (user) on the testbed
 ...
 
 ## Adding a new attack

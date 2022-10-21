@@ -30,9 +30,10 @@ XMLHttpRequest in [the dashboard's javascript](/flask/app/website/static/js/cont
 
 #### dashboard.env
 [dashboard.env](dashboard.env.sample) contains the environment variables required by the flask container. 
+`FQDM` is the fully-qualified domain name on which the dashboard is hosted (use localhost to test locally).
 `PARTNERS` is a list of names of connected organizations, separated by a colon (`:`), e.g. PARTNERS=SIDN:SURF. 
 Then, for each defined partner `X`, add a variable `X_TARGET` that is that organization's target IP address or DNS name.
-E.g., `SIDN_TARGET=sidn.nl`, `SURF_TARGET=1.2.3.4`.
+E.g., `SIDN_TARGET=sidn.nl`, `SURF_TARGET=1.2.3.4`. Be sure to remove the .sample extension and edit dashboard.env
 
 ### Nginx
 The application is secured with IP-whitelisting and HTTP Basic authentication in the 
@@ -48,9 +49,28 @@ the corresponding organization in the nginx config.
 ### SSL/TLS certificate (certbot)
 Easily obtain a certificate with Let's encrypt and certbot using [this repository](https://github.com/wmnnd/nginx-certbot)
 Copy the resulting `/data/certbot` directory to this directory (such that `/certbot` is next to `/flask`). 
-Remember to bring down the docker containers when you're done. 
+Remember to bring down the docker containers when you're done.
 
-## Dashboard instructions
-[Visit the dashboard homepage](https://www.ddosclearinghouse.eu) --> select your dashboard --> Login with HTTP basic 
-auth --> enter attack details --> start / stop the simulated attack --> login with HTTP basic auth again 
-(for api.domainname, doubles as confirmation).
+## How to run the dashboard
+1. Edit dashboard.env to match your setup (see dashboard.env section above)
+2. Edit the Nginx config to use your domain name and your dashboard users (see Nginx section above)
+3. Generate TLS certificate following the instruction above
+4. in this directory, run `docker-compose up -d --build`
+
+## Adding a new partner
+1. Edit [dashboard.env](dashboard.env.sample) to include the new organization/user in the list of PARTNERS, and define a target variable, following the same format as in the template.
+2. Create HTTP Basic Authentication credentials in the nginx directory for the new user, using `htpasswd -c user.htpasswd user`
+3. Edit the Nginx configuration to create a location block for the new partner. copy an existing one as template and edit the IP whitelist and HTTP basic auth file location. Also add the whitelisted IP addresses to the `location /` block.
+4. Restart the dashboard (`docker-compose up -d --build`)
+5. If needed, force-recrease the Nginx container (`docker-compose restart nginx`)
+
+## Adding a new attack
+1. Setup the ansible playbook following the instructions in the corresponding [README](../ansible/README.md#Adding-a-new-attack-(Ansible-part)).
+2. !! I'm planning on simplifying the next part at some point.
+3. Creating the API endpoint
+   1. In the Flask API's [resources file](flask/app/api/resources.py), Add a class that inherits from `Resource`. For attack playbooks without extra variables (besides the target and duration), you can inherit from the `StartPlaybook` class. See the existing classes as examples.
+   2. In the Flask API's [init file](flask/app/api/__init__.py), import the newly created class, and add a resource to the api object with the location `'/&lt;string:partner>/start/$yourattack'`. Follow the existing resources as example.
+4. Creating the attack option in the HTML form
+   1. In the [HTML template](flask/app/website/templates/dashboard.html), add an option in the drop-down menu with attacks (select#attack), take not of the option's _value_
+   2. If the attack has more variables, customize the form further. Follow the Hping3 example, also in the python Resource class.
+5. In [content.js](flask/app/website/static/js/content.js), add an `else if` block in the #start-button's onclick method that posts to the API endpoint created in step 3. For this, refer back to the resource location from step 3.2 and the form value in step 4.1. Also change the urls to your domain name here.
