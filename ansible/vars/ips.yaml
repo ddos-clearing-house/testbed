@@ -1,0 +1,10 @@
+---
+master_ips:
+  - ip: 139.162.253.218
+    comment: Dashboard IPv4
+  - ip: 2a01:7e00::f03c:92ff:febe:fa7b
+    comment: Dashboard IPv6
+  - ip: 94.198.159.0/24
+    comment: SIDN Labs IPv4
+  - ip: 2a00:d78:0:700::/56
+    comment: SIDN Labs IPv6
