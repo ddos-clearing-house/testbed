@@ -30,10 +30,10 @@ echo "PasswordAuthentication no" >> my.conf
 systemctl restart sshd
 ```
 
-3. Add the IP addresses or DNS names of the attacking machines to the [inventory](inventory) file under the attackers block.
-4. Clone this repository on the server that will host the dashboard and install ansible on that server.
-5. From this directory, run `ansible-playbook -i ./inventory setup.yml` - this will install all the attack tools on all attack nodes defined in the inventory file.
-6. When adding an attack node, make sure to execute step 2 on the new machine, then simply run the setup playbook using ansible again. 
+3. Clone this repository on the server that will host the dashboard and install ansible on that server.
+4. On the dashboard sevrer, add the IP addresses or DNS names of the attacking machines to the [inventory](inventory) file under the attackers block.
+6. From this directory, run `ansible-playbook -i ./inventory setup.yml` - this will install all the attack tools on all attack nodes defined in the inventory file.
+7. When adding an attack node, make sure to execute step 2 on the new machine, then simply run the setup playbook using ansible again. 
 
 ## Adding a new attack (Ansible part)
 1. In the [setup playbook](setup.yml), add a `task` item with instructions to install the new attack tool (from [git](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/git_module.html#examples), or by [copying](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html#examples) a local file).
