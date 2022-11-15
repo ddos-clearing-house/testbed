@@ -1,0 +1,10 @@
+---
+master_ips:
+  - ip: 1.2.3.4
+    comment: Dashboard IPv4
+  - ip: 2400::dead:beef:1234::
+    comment: Dashboard IPv6
+  - ip: 1.2.3.4/24
+    comment: Admin IPv4
+  - ip: 2400::dead:beef:1234::
+    comment: Admin IPv6
