@@ -14,5 +14,5 @@ def dashboard(partner: str):
     print(partner)
     if partner not in os.getenv('PARTNERS').split(':'):
         abort(404)
-    return render_template("dashboard.html", partner=partner)
+    return render_template("dashboard.html", partner=partner, fqdn=os.getenv('FQDN'))
 
