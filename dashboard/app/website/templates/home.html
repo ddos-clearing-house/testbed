@@ -18,8 +18,8 @@
             <div class="content-block" style="text-align: center">
                 <h3>Visit your dashboard:</h3><br>
                 {% for partner in partners %}
-                    <form action="/{{ partner|lower }}" style="display:inline;">
-                        <input type="submit" value="{{ partner|upper }}" class="btn btn-primary"
+                    <form action="/{{ partner|lower|replace(' ', '-') }}" style="display:inline;">
+                        <input type="submit" value="{{ partner }}" class="btn btn-primary"
                                style="display: inline">
                     </form>
                 {% endfor %}

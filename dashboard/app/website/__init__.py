@@ -11,8 +11,7 @@ def home():
 
 @website_blueprint.route('/<string:partner>')
 def dashboard(partner: str):
-    print(partner)
-    if partner not in os.getenv('PARTNERS').split(':'):
+    if partner.lower() not in [name.lower().replace(' ', '-') for name in os.getenv('PARTNERS').split(':')]:
         abort(404)
-    return render_template("dashboard.html", partner=partner, fqdn=os.getenv('FQDN'))
+    return render_template("dashboard.html", partner=partner.upper(), fqdn=os.getenv('FQDN'))
 

@@ -7,11 +7,11 @@
         <div class="col-md-12">
             <div class="content-block">
                 <div style="float: left;">
-                    <h3>DDoS Clearing House Simulation Dashboard</h3>
+                    <h3>DDoS Clearing House Testbed</h3>
                 </div>
                 <div style="float: right;">
                     <h3>
-                        {{ partner|upper }}
+                        {{ partner|upper|replace('-', ' ') }}
                     </h3>
                 </div>
             </div>
@@ -35,7 +35,7 @@
         <div class="col-md-9">
             <div class="content-block" id="green">
                 <h4 style="width: 100%; text-align: center; margin-bottom: 30px">
-                    Orchestrate test traffic for {{ partner|upper }}
+                    Construct DDoS test traffic for {{ partner|upper|replace('-', ' ') }}
                 </h4>
                 <form id="start-form">
                     <div class="row">
@@ -211,8 +211,8 @@
                 <div class="modal-body">
                     <table id="modal-table">
                     </table>
-                    <br>Five identical machines will <i>each</i> send this traffic to the target.
-                    <br>You will be prompted for your credentials again on start.
+                    <br>All attack nodes will <i>each</i> send this traffic to the target.
+                    <br>You might be prompted for your credentials again on start.
                 </div>
                 <div class="modal-footer">
                     <button type=button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -229,12 +229,9 @@
             <div class="alert alert-warning" id="disclaimer" role="alert">
                 <h5>WARNING</h5>
                 <h6>
-                    Disclaimer: this web page is part of a pilot of the DDoS Clearing House. It is meant to
-                    initiate simulated DDoS traffic to one of the partners of this pilot: {{ partner|upper }}. The
-                    goal of sending test traffic is solely to test the DDoS Clearing House; not to send a <i>real</i>
-                    DDoS attack to load test the target. Traffic will originate from five identical sources in
-                    parallel. In no event is SIDN (Labs) liable for any claim, damages, or other liability as a result
-                    from the actions performed on this web page.
+                    This dashboard is meant to initiate simulated DDoS traffic to the configured target server
+                    of "{{ partner|upper|replace('-', ' ') }}". In no event is SIDN (Labs) liable for any claim,
+                    damages, or other liability as a result from the actions performed on this web page.
                 </h6>
             </div>
         </div>

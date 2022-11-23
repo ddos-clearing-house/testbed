@@ -16,7 +16,7 @@ async def command(cmd):
 class StartHping(Resource):
     @staticmethod
     def post(partner: str):
-        if partner not in os.getenv('PARTNERS').split(':'):
+        if partner.lower() not in [name.lower().replace(' ', '-') for name in os.getenv('PARTNERS').split(':')]:
             return {'Error': f'partner {partner} is not in the list of partners in this pilot.'}, 400
 
         target = os.getenv(f'{partner.upper()}_TARGET')
@@ -40,7 +40,6 @@ class StartHping(Resource):
         parser.add_argument('no_frag')
         parser.add_argument('more_frag')
         args = parser.parse_args()
-        print(args)
 
         # Validate arguments and construct hping3 command flags
         flags = ['--quiet']
@@ -100,16 +99,13 @@ class StartHping(Resource):
             flags.append('--fin')
 
         flags = ' '.join(flags)
-        print(flags)
 
         try:
             if partner == 'demo':
                 prime_target = f"""ansible-playbook -i /ansible/inventory /ansible/prime_target.yml --extra-vars "duration={args.duration + 5}" """
-                print("Priming target")
                 asyncio.run(command(prime_target))
 
             instructions = f"""ansible-playbook -i /ansible/inventory /ansible/attacks/hping.yml --extra-vars "duration={args.duration} target={target} flags='{flags}'" """
-            print(f"Running: {instructions}")
             asyncio.run(command(instructions))
         except KeyError:
             return {'Error': 'Invalid attack type.'}, 400
@@ -120,7 +116,7 @@ class StartHping(Resource):
 class StartPlaybook(Resource):
     @staticmethod
     def start_command(partner: str, playbook: str, protocol: str = ''):
-        if partner not in os.getenv('PARTNERS').split(':'):
+        if partner.lower() not in [name.lower().replace(' ', '-') for name in os.getenv('PARTNERS').split(':')]:
             return {'Error': f'partner {partner} is not in the list of partners in this pilot.'}, 400
 
         target = os.getenv(f'{partner.upper()}_TARGET')
@@ -128,7 +124,6 @@ class StartPlaybook(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('duration', type=int, required=True)
         args = parser.parse_args()
-        print(args)
 
         if type(args.duration) != int or args.duration > 120 or args.duration < 1:
             return {'Error': 'Duration must be a positive integer under 120.'}, 400
@@ -136,12 +131,10 @@ class StartPlaybook(Resource):
         try:
             if partner == 'demo':
                 prime_target = f"""ansible-playbook -i /ansible/inventory /ansible/prime_target.yml --extra-vars "duration={args.duration + 5}" """
-                print("Priming target")
                 asyncio.run(command(prime_target))
 
             instructions = f'ansible-playbook -i /ansible/inventory /ansible/attacks/{playbook} --extra-vars ' \
                            f'"duration={args.duration} target={protocol}{target}" '
-            print(f"Running: {instructions}")
             asyncio.run(command(instructions))
         except KeyError:
             return {'Error': 'Invalid attack type.'}, 400
@@ -176,7 +169,7 @@ class StartSlowloris(StartPlaybook):
 class Stop(Resource):
     @staticmethod
     def post(partner: str):
-        if partner not in os.getenv('PARTNERS').split(':'):
+        if partner.lower() not in [name.lower().replace(' ', '-') for name in os.getenv('PARTNERS').split(':')]:
             return {'error': f'partner {partner} is not in the list of partners in this pilot.'}, 400
 
         asyncio.run(command("kill $(ps aux | grep '[A]nsiballZ_command' | awk '{print $2}')"))

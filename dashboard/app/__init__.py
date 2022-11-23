@@ -1,9 +1,11 @@
 import os
 from flask import Flask, redirect
+from dotenv import load_dotenv
 
 from app.website import website_blueprint
 from app.api import api_blueprint
 
+load_dotenv()
 app = Flask(__name__, subdomain_matching=True)
 app.config['SERVER_NAME'] = os.getenv('FQDN')
 
@@ -13,4 +15,4 @@ app.register_blueprint(api_blueprint, subdomain='api')  # API
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return redirect(f"https://www.{app.config['SERVER_NAME']}")
+    return redirect(f"http://www.{app.config['SERVER_NAME']}")
