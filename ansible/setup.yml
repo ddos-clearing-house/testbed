@@ -16,6 +16,11 @@
     - import_tasks: tasks/tc.yml
 
     # Install requirements and tools
+    - name: Ensure git is installed
+      apt:
+        name: git
+        state: present
+
     - name: Ensure hping3 is installed
       apt:
         name: hping3

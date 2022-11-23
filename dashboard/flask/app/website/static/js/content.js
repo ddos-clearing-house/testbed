@@ -1,4 +1,5 @@
 const partner = $("#nameContainer").data("partner");
+const fqdn = $("#fqdnContainer").data("fqdn");
 const durationLabel = $("span#durationValue");
 
 // Start traffic button in confirmation screen
@@ -8,15 +9,15 @@ $("#start-button").on('click', (event) => {
     req.onreadystatechange = handleError;
     const formData = new FormData(document.getElementById('start-form'));
     if (formData.get("attack") === "http flood"){
-        req.open("POST", `https://api.ddosclearinghouse.eu/${partner}/start/goldeneye`, false);
+        req.open("POST", `http://api.${fqdn}/${partner}/start/goldeneye`, false);
     } else if (formData.get("attack") === "hulk"){
-        req.open("POST", `https://api.ddosclearinghouse.eu/${partner}/start/hulk`, false);
+        req.open("POST", `http://api.${fqdn}/${partner}/start/hulk`, false);
     } else if (formData.get("attack") === "loic"){
-        req.open("POST", `https://api.ddosclearinghouse.eu/${partner}/start/loic`, false);
+        req.open("POST", `http://api.${fqdn}/${partner}/start/loic`, false);
     } else if (formData.get("attack") === "slowloris"){
-        req.open("POST", `https://api.ddosclearinghouse.eu/${partner}/start/slowloris`, false);
+        req.open("POST", `http://api.${fqdn}/${partner}/start/slowloris`, false);
     } else if (formData.get("attack") === "custom") {
-        req.open("POST", `https://api.ddosclearinghouse.eu/${partner}/start/hping`, false);
+        req.open("POST", `http://api.${fqdn}/${partner}/start/hping`, false);
     } else {
         return;
     }
@@ -50,7 +51,7 @@ $("#stop-button").on('click', (event) => {
     event.preventDefault();
     const req = new XMLHttpRequest();
     req.onreadystatechange = handleError;
-    req.open("POST", `https://api.ddosclearinghouse.eu/${partner}/stop`, true);
+    req.open("POST", `https://${fqdn}.eu/${partner}/stop`, true);
     req.withCredentials = true;
     req.send();
     $("#staffic-stopped-alert").removeClass("collapse").delay(2500).queue(function (next) {
