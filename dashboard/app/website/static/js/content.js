@@ -21,7 +21,6 @@ $("#start-button").on('click', (event) => {
     } else {
         return;
     }
-    req.withCredentials = true;
     req.send(formData);
 
     // Count down alert box
@@ -51,8 +50,7 @@ $("#stop-button").on('click', (event) => {
     event.preventDefault();
     const req = new XMLHttpRequest();
     req.onreadystatechange = handleError;
-    req.open("POST", `http://${fqdn}.eu/${partner}/stop`, true);
-    req.withCredentials = true;
+    req.open("POST", `http://api.${fqdn}/${partner}/stop`, true);
     req.send();
     $("#staffic-stopped-alert").removeClass("collapse").delay(2500).queue(function (next) {
         $(this).addClass("collapse");

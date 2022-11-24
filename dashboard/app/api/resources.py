@@ -1,3 +1,5 @@
+import time
+
 from flask_restful import Resource, reqparse
 import asyncio
 import os
@@ -25,20 +27,20 @@ class StartHping(Resource):
 
         # Parse arguments
         parser = reqparse.RequestParser()
-        parser.add_argument('protocol', choices=list(protocol_options.keys()), required=True)
-        parser.add_argument('duration', type=int, required=True)
-        parser.add_argument('speed', choices=speed_options, required=True)
-        parser.add_argument('port', type=int)
-        parser.add_argument('data', type=int)
-        parser.add_argument('icmp_type', type=int)
-        parser.add_argument('icmp_code', type=int)
-        parser.add_argument('ip_proto', type=int)
-        parser.add_argument('syn')
-        parser.add_argument('ack')
-        parser.add_argument('fin')
-        parser.add_argument('fragment')
-        parser.add_argument('no_frag')
-        parser.add_argument('more_frag')
+        parser.add_argument('protocol', choices=list(protocol_options.keys()), required=True, location='form')
+        parser.add_argument('duration', type=int, required=True, location='form')
+        parser.add_argument('speed', choices=speed_options, required=True, location='form')
+        parser.add_argument('port', type=int, location='form')
+        parser.add_argument('data', type=int, location='form')
+        parser.add_argument('icmp_type', type=int, location='form')
+        parser.add_argument('icmp_code', type=int, location='form')
+        parser.add_argument('ip_proto', type=int, location='form')
+        parser.add_argument('syn', location='form')
+        parser.add_argument('ack', location='form')
+        parser.add_argument('fin', location='form')
+        parser.add_argument('fragment', location='form')
+        parser.add_argument('no_frag', location='form')
+        parser.add_argument('more_frag', location='form')
         args = parser.parse_args()
 
         # Validate arguments and construct hping3 command flags
@@ -99,15 +101,17 @@ class StartHping(Resource):
             flags.append('--fin')
 
         flags = ' '.join(flags)
-
         try:
             if partner == 'demo':
-                prime_target = f"""ansible-playbook -i /ansible/inventory /ansible/prime_target.yml --extra-vars "duration={args.duration + 5}" """
+                prime_target = f"""ansible-playbook -i {os.getenv('TESTBED_ROOT_DIR')}/ansible/inventory {os.getenv('TESTBED_ROOT_DIR')}/ansible/prime_target.yml --extra-vars "duration={args.duration + 5}" """
                 asyncio.run(command(prime_target))
 
-            instructions = f"""ansible-playbook -i /ansible/inventory /ansible/attacks/hping.yml --extra-vars "duration={args.duration} target={target} flags='{flags}'" """
+            # TODO env var for root dir (niet /ansible)
+            instructions = f"""ansible-playbook -i {os.getenv('TESTBED_ROOT_DIR')}/ansible/inventory {os.getenv('TESTBED_ROOT_DIR')}/ansible/attacks/hping.yml --extra-vars "duration={args.duration} target={target} flags='{flags}'" """
+            print('Running command:', instructions)
             asyncio.run(command(instructions))
         except KeyError:
+            print('Keyerror')
             return {'Error': 'Invalid attack type.'}, 400
 
         return {'message': f'Started hping3 with flags {flags}!'}, 200
@@ -130,10 +134,10 @@ class StartPlaybook(Resource):
 
         try:
             if partner == 'demo':
-                prime_target = f"""ansible-playbook -i /ansible/inventory /ansible/prime_target.yml --extra-vars "duration={args.duration + 5}" """
+                prime_target = f"""ansible-playbook -i {os.getenv('TESTBED_ROOT_DIR')}/ansible/inventory {os.getenv('TESTBED_ROOT_DIR')}/ansible/prime_target.yml --extra-vars "duration={args.duration + 5}" """
                 asyncio.run(command(prime_target))
 
-            instructions = f'ansible-playbook -i /ansible/inventory /ansible/attacks/{playbook} --extra-vars ' \
+            instructions = f'ansible-playbook -i {os.getenv("TESTBED_ROOT_DIR")}/ansible/inventory {os.getenv("TESTBED_ROOT_DIR")}/ansible/attacks/{playbook} --extra-vars ' \
                            f'"duration={args.duration} target={protocol}{target}" '
             asyncio.run(command(instructions))
         except KeyError:
@@ -169,6 +173,7 @@ class StartSlowloris(StartPlaybook):
 class Stop(Resource):
     @staticmethod
     def post(partner: str):
+        print('stopping traffic')
         if partner.lower() not in [name.lower().replace(' ', '-') for name in os.getenv('PARTNERS').split(':')]:
             return {'error': f'partner {partner} is not in the list of partners in this pilot.'}, 400
 

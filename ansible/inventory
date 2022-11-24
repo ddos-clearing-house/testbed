@@ -1,6 +1,5 @@
 [attackers]
-123.123.123.123
-attack-node2.example.com
+ddosch-node[1:5].sidnlabs.nl
 
 [attackers:vars]
 ansible_user=ansible
