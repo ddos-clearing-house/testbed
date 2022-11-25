@@ -2,6 +2,7 @@ import time
 
 from flask_restful import Resource, reqparse
 import asyncio
+import threading
 import os
 
 
@@ -23,7 +24,7 @@ class StartHping(Resource):
 
         target = os.getenv(f'{partner.upper()}_TARGET')
         protocol_options = {'tcp': '', 'udp': '--udp', 'icmp': '--icmp', 'rawip': '--rawip'}
-        speed_options = ['u100000', 'u10000', 'u1000', 'u100', 'u10', 'u1', 'u0']
+        speed_options = ['u1000000', 'u100000', 'u10000', 'u1000', 'u100', 'u10', 'u1', 'u0']
 
         # Parse arguments
         parser = reqparse.RequestParser()
@@ -173,9 +174,13 @@ class StartSlowloris(StartPlaybook):
 class Stop(Resource):
     @staticmethod
     def post(partner: str):
+        # FIXME
         print('stopping traffic')
         if partner.lower() not in [name.lower().replace(' ', '-') for name in os.getenv('PARTNERS').split(':')]:
             return {'error': f'partner {partner} is not in the list of partners in this pilot.'}, 400
 
-        asyncio.run(command("kill $(ps aux | grep '[A]nsiballZ_command' | awk '{print $2}')"))
+        target = os.getenv(f'{partner.upper()}_TARGET')
+        instructions = f'ansible-playbook -i {os.getenv("TESTBED_ROOT_DIR")}/ansible/inventory ' \
+                       f'{os.getenv("TESTBED_ROOT_DIR")}/ansible/attacks/stop.yml --extra=vars "target={target}"'
+        asyncio.run(command(instructions))
         return {'message': f'Stopped!'}, 200

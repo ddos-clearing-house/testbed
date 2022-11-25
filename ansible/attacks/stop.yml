@@ -1,0 +1,9 @@
+---
+- name: Stop attack traffic
+  hosts: attackers
+  gather_facts: false
+
+  tasks:
+    - name: Stop traffic
+      shell: "sudo kill $(ps --sort=start_time aux | grep 'target.ddos.blue' | awk '{print $2}')"
+      ignore_errors: true
