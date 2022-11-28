@@ -30,8 +30,8 @@ To run the dashboard locally (not connected to the internet), follow these instr
    172.17.0.2
    attacker.somesite.net
    ```
-5. Run the dashboard with `python run.py` and visit at http://ddos.local:8989   
-6. Follow the rest of this README
+5. In the dashboard directory, run the dashboard with `python run.py` and visit at http://ddos.local:8989   
+6. Follow the rest of this README. Any changes require a restart of the dashboard.
 
 ## 2. Attack nodes
 
