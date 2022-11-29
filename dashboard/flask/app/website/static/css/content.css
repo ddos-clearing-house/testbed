@@ -11,7 +11,7 @@ body {
     margin-top: 50px;
     background-color: #f8f8f8;
     color: #17161a;
-    background-image: url('/static/media/concordia-inverse-logo.png');
+    background-image: url('/static/media/nomoreddos_inverse_small.png');
     background-repeat: repeat;
     background-attachment: fixed;
     min-height: calc(100vh - 50px - 3rem)
