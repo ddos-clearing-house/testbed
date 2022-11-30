@@ -7,8 +7,8 @@ services:
     container_name: flask
     restart: unless-stopped
     volumes:
-      - /home/admin/testbed/ansible:/ansible:ro  # ansible files
-      - /home/admin/.ssh:/root/.ssh:ro   # ssh keys
+      - ../ansible:/ansible:ro  # ansible files
+      - ~/.ssh:/root/.ssh:ro   # ssh keys
     env_file:
       - dashboard.env
     expose:

@@ -16,29 +16,30 @@ async def command(cmd):
 class StartHping(Resource):
     @staticmethod
     def post(partner: str):
-        if partner not in os.getenv('PARTNERS').split(':'):
+        print('POST StartHping')
+        if partner not in [p.lower().replace(' ', '-') for p in os.getenv('PARTNERS').split(':')]:
             return {'Error': f'partner {partner} is not in the list of partners in this pilot.'}, 400
 
         target = os.getenv(f'{partner.upper()}_TARGET')
         protocol_options = {'tcp': '', 'udp': '--udp', 'icmp': '--icmp', 'rawip': '--rawip'}
-        speed_options = ['u100000', 'u10000', 'u1000', 'u100', 'u10', 'u1', 'u0']
+        speed_options = ['u1000000', 'u100000', 'u10000', 'u1000', 'u100', 'u10', 'u1', 'u0']
 
         # Parse arguments
         parser = reqparse.RequestParser()
-        parser.add_argument('protocol', choices=list(protocol_options.keys()), required=True)
-        parser.add_argument('duration', type=int, required=True)
-        parser.add_argument('speed', choices=speed_options, required=True)
-        parser.add_argument('port', type=int)
-        parser.add_argument('data', type=int)
-        parser.add_argument('icmp_type', type=int)
-        parser.add_argument('icmp_code', type=int)
-        parser.add_argument('ip_proto', type=int)
-        parser.add_argument('syn')
-        parser.add_argument('ack')
-        parser.add_argument('fin')
-        parser.add_argument('fragment')
-        parser.add_argument('no_frag')
-        parser.add_argument('more_frag')
+        parser.add_argument('protocol', choices=list(protocol_options.keys()), required=True, location='form')
+        parser.add_argument('duration', type=int, required=True, location='form')
+        parser.add_argument('speed', choices=speed_options, required=True, location='form')
+        parser.add_argument('port', type=int, location='form')
+        parser.add_argument('data', type=int, location='form')
+        parser.add_argument('icmp_type', type=int, location='form')
+        parser.add_argument('icmp_code', type=int, location='form')
+        parser.add_argument('ip_proto', type=int, location='form')
+        parser.add_argument('syn', location='form')
+        parser.add_argument('ack', location='form')
+        parser.add_argument('fin', location='form')
+        parser.add_argument('fragment', location='form')
+        parser.add_argument('no_frag', location='form')
+        parser.add_argument('more_frag', location='form')
         args = parser.parse_args()
         print(args)
 
@@ -120,7 +121,7 @@ class StartHping(Resource):
 class StartPlaybook(Resource):
     @staticmethod
     def start_command(partner: str, playbook: str, protocol: str = ''):
-        if partner not in os.getenv('PARTNERS').split(':'):
+        if partner not in [p.lower().replace(' ', '-') for p in os.getenv('PARTNERS').split(':')]:
             return {'Error': f'partner {partner} is not in the list of partners in this pilot.'}, 400
 
         target = os.getenv(f'{partner.upper()}_TARGET')
@@ -176,7 +177,7 @@ class StartSlowloris(StartPlaybook):
 class Stop(Resource):
     @staticmethod
     def post(partner: str):
-        if partner not in os.getenv('PARTNERS').split(':'):
+        if partner not in [p.lower().replace(' ', '-') for p in os.getenv('PARTNERS').split(':')]:
             return {'error': f'partner {partner} is not in the list of partners in this pilot.'}, 400
 
         asyncio.run(command("kill $(ps aux | grep '[A]nsiballZ_command' | awk '{print $2}')"))
