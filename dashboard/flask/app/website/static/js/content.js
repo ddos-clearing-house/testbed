@@ -8,13 +8,13 @@ $("#start-button").on('click', (event) => {
     const req = new XMLHttpRequest();
     req.onreadystatechange = handleError;
     const formData = new FormData(document.getElementById('start-form'));
-    if (formData.get("attack") === "http flood"){
+    if (formData.get("attack") === "http flood") {
         req.open("POST", `https://api.${fqdn}/${partner}/start/goldeneye`, false);
-    } else if (formData.get("attack") === "hulk"){
+    } else if (formData.get("attack") === "hulk") {
         req.open("POST", `https://api.${fqdn}/${partner}/start/hulk`, false);
-    } else if (formData.get("attack") === "loic"){
+    } else if (formData.get("attack") === "loic") {
         req.open("POST", `https://api.${fqdn}/${partner}/start/loic`, false);
-    } else if (formData.get("attack") === "slowloris"){
+    } else if (formData.get("attack") === "slowloris") {
         req.open("POST", `https://api.${fqdn}/${partner}/start/slowloris`, false);
     } else if (formData.get("attack") === "custom") {
         req.open("POST", `https://api.${fqdn}/${partner}/start/hping`, false);
@@ -60,7 +60,7 @@ $("#stop-button").on('click', (event) => {
     });
 });
 
-String.prototype.capitalize = function() {
+String.prototype.capitalize = function () {
     return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase();
 }
 
@@ -84,7 +84,6 @@ $("#to-confirm").on('click', (event) => {
         $("#alert-content").html("<strong>Invalid duration:</strong> should be between 1 and 120 seconds.")
         parametersOk = false;
     }
-
 
 
     const port = $("input#port").val();
@@ -230,3 +229,26 @@ $("select#attack").on('change', function () {
         $("select#protocol").change()
     }
 }).change()
+
+// Darkmode toggle
+function darkmodeToggle() {
+    $("body").toggleClass("dark");
+    $("#confirmationModal").toggleClass("dark");
+    $("select").each(function(){
+        $(this).toggleClass("dark");
+    });
+    $("input").each(function(){
+        $(this).toggleClass("dark");
+    });
+    $('.content-block').each(function() {
+        $(this).toggleClass("dark");
+    });
+    $('.alert-warning').each(function() {
+        $(this).toggleClass("dark");
+    });
+    $('.modal-content').each(function() {
+        $(this).toggleClass("dark");
+    });
+    $('#footer-bar').toggleClass("dark");
+}
+
