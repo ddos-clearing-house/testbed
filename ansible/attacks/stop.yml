@@ -1,0 +1,10 @@
+---
+- name: Stop attacks
+  hosts: attackers
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Stop sending attack traffic
+      shell: "kill $(ps aux | grep '{{ target }}' | awk '{print $2}')"
+      ignore_errors: true

@@ -180,5 +180,11 @@ class Stop(Resource):
         if partner not in [p.lower().replace(' ', '-') for p in os.getenv('PARTNERS').split(':')]:
             return {'error': f'partner {partner} is not in the list of partners in this pilot.'}, 400
 
-        asyncio.run(command("kill $(ps aux | grep '[A]nsiballZ_command' | awk '{print $2}')"))
+        target = os.getenv(f'{partner.upper()}_TARGET')
+        target = f'[{target[0]}]{target[1:]}'  # [t]arget (for better grep)
+
+        instructions = f'ansible-playbook -i /ansible/inventory /ansible/attacks/stop.yml --extra-vars ' \
+                       f'"target={target}" '
+        print(f"Running: {instructions}")
+        asyncio.run(command(instructions))
         return {'message': f'Stopped!'}, 200
