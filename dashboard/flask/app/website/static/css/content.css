@@ -19,13 +19,13 @@ body {
 
 body.dark {
     background-color: #2b2b2b;
-    color: #f0f0f0;
-    background-image: url('/static/media/concordia-inverse-logo-dark.png');
+    color: #e0e0e0;
+    background-image: url('/static/media/nomoreddos_inverse_small-dark.png');
 }
 
 select.dark, input.dark {
     background-color: #2b2b2b !important;
-    color: #f0f0f0 !important;
+    color: #e0e0e0 !important;
 }
 
 select.dark:disabled, input.dark:disabled {
@@ -57,9 +57,19 @@ input.dark[type=number] {
     display: inline-block;
 }
 
+.alert-warning.dark {
+    background-color: #303030;
+    color: goldenrod;
+    border: 1px solid goldenrod;
+}
+
 .content-block.dark {
     background-color: #303030;
     border-top: 7px solid #94dcdc;
+}
+
+.modal-content.dark {
+    background-color: #303030;
 }
 
 /*div.modal-content {*/
@@ -92,7 +102,7 @@ div#red.dark {
     padding-right: 50px;
 }
 
-.footer-bar {
+#footer-bar {
     background-color: #f0f0f0;
     font-family: 'Lato', sans-serif;
     color: #17161a;
@@ -105,9 +115,9 @@ div#red.dark {
     height: 3rem;
 }
 
-.footer-bar.dark {
+#footer-bar.dark {
     background-color: #303030;
-    color: #f0f0f0;
+    color: #e0e0e0;
 }
 
 .form-field {
