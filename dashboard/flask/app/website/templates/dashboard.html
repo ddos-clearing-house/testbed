@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-    <div id="nameContainer" data-partner="{{ partner }}"></div>
+    <div id="nameContainer" data-organization="{{ organization }}"></div>
     <div id="fqdnContainer" data-fqdn="{{ fqdn }}"></div>
     <div class="row">
         <div class="col-md-12">
@@ -11,7 +11,7 @@
                 </div>
                 <div style="float: right;">
                     <h3>
-                        {{ partner|upper }}
+                        {{ organization|upper }}
                     </h3>
                 </div>
             </div>
@@ -35,21 +35,20 @@
         <div class="col-md-9">
             <div class="content-block" id="green">
                 <h4 style="width: 100%; text-align: center; margin-bottom: 30px">
-                    Generate DDoS traffic for {{ partner|upper }}
+                    Generate DDoS traffic for {{ organization|upper }}
                 </h4>
                 <form id="start-form">
                     <div class="row">
                         <!-- Left column of attack details -->
                         <div class="col-lg-5" style="border-right: 2px solid lightslategrey">
-                            <input type="hidden" id="target" name="target" value="{{ partner }}">
+                            <input type="hidden" id="target" name="target" value="{{ organization }}">
 
                             <div class="form-floating form-field">
                                 <select class="form-select" id="attack" form="start-form" name="attack">
-                                    <option value="http flood">Goldeneye</option>
-                                    <option value="slowloris">Slowloris</option>
-                                    <option value="hulk">HTTP Unbearable Load King</option>
-                                    <option value="loic">Low Orbit Ion Cannon</option>
-                                    <option value="custom" selected>Custom packets</option>
+                                    <option value="hping" selected>Custom packets</option>
+                                    {% for attack in attacks %}
+                                        <option value="{{ attack }}">{{ attack|capitalize }}</option>
+                                    {% endfor %}
                                 </select>
                                 <label for="attack">Attack Type</label>
                             </div>
@@ -71,19 +70,21 @@
                                     <option value="u10000">100</option>
                                     <option value="u1000">1,000</option>
                                     <option value="u10">10,000</option>
-{#                                    <option value="u1">100,000</option>#}
+                                    {#                        <option value="u1">100,000</option>#}
                                     {#                        <option value="u0">fastest</option>#}
                                 </select>
                                 <label for="protocol">Packets per second</label>
                             </div>
 
                             <div class="form-floating form-field">
-                                <input type="number" class="form-control tcp udp rawip" id="port" name="port" min="1" max="65535"
+                                <input type="number" class="form-control tcp udp rawip" id="port" name="port" min="1"
+                                       max="65535"
                                        value="80" form="start-form">
                                 <label for="port">Destination port</label>
                             </div>
                             <div class="form-floating form-field">
-                                <input type="number" class="form-control tcp udp rawip" id="data" name="data" min="0" max="1000"
+                                <input type="number" class="form-control tcp udp rawip" id="data" name="data" min="0"
+                                       max="1000"
                                        value="0" form="start-form">
                                 <label for="data">Packet data bytes</label>
                             </div>
@@ -98,19 +99,22 @@
                         <div class="col-lg-7">
                             <div id="ip-details">
                                 <div class="form-check">
-                                    <input type="checkbox" id="fragment" class="form-check-input rawip tcp udp" form="start-form" name="fragment">
+                                    <input type="checkbox" id="fragment" class="form-check-input rawip tcp udp"
+                                           form="start-form" name="fragment">
                                     <label for="fragment" class="form-check-label">
                                         Fragment packets
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input type="checkbox" id="more-frag" class="form-check-input rawip tcp udp" form="start-form" name="more_frag">
+                                    <input type="checkbox" id="more-frag" class="form-check-input rawip tcp udp"
+                                           form="start-form" name="more_frag">
                                     <label for="more-frag" class="form-check-label">
                                         More fragments flag
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input type="checkbox" id="no-frag" class="form-check-input rawip tcp udp" form="start-form" name="no_frag">
+                                    <input type="checkbox" id="no-frag" class="form-check-input rawip tcp udp"
+                                           form="start-form" name="no_frag">
                                     <label for="no-frag" class="form-check-label">
                                         No more fragments flag
                                     </label>
@@ -118,19 +122,22 @@
                             </div>
                             <div id="raw-ip-details">
                                 <div class="form-floating form-field" id="input-ip-proto">
-                                    <input type="number" class="form-control rawip" id="ip-proto" name="ip_proto" min="0"
+                                    <input type="number" class="form-control rawip" id="ip-proto" name="ip_proto"
+                                           min="0"
                                            max="143" value="5" form="start-form">
                                     <label for="ip-proto">IP Protocol nr</label>
                                 </div>
                             </div>
                             <div id="icmp-details">
                                 <div class="form-floating form-field">
-                                    <input type="number" class="form-control icmp" id="icmp-type" name="icmp_type" min="0"
+                                    <input type="number" class="form-control icmp" id="icmp-type" name="icmp_type"
+                                           min="0"
                                            max="18" value="8" form="start-form">
                                     <label for="icmp-type">ICMP type</label>
                                 </div>
                                 <div class="form-floating form-field">
-                                    <input type="number" class="form-control icmp" id="icmp-code" name="icmp_code" min="0"
+                                    <input type="number" class="form-control icmp" id="icmp-code" name="icmp_code"
+                                           min="0"
                                            max="15" value="0" form="start-form">
                                     <label for="icmp-code">ICMP code</label>
                                 </div>
@@ -140,19 +147,22 @@
                             </div>
                             <div id="tcp-details">
                                 <div class="form-check">
-                                    <input type="checkbox" id="syn" class="form-check-input tcp" form="start-form" name="syn">
+                                    <input type="checkbox" id="syn" class="form-check-input tcp" form="start-form"
+                                           name="syn">
                                     <label for="syn" class="form-check-label">
                                         SYN flag
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input type="checkbox" id="ack" class="form-check-input tcp" form="start-form" name="ack">
+                                    <input type="checkbox" id="ack" class="form-check-input tcp" form="start-form"
+                                           name="ack">
                                     <label for="ack" class="form-check-label">
                                         ACK flag
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input type="checkbox" id="fin" class="form-check-input tcp" form="start-form" name="fin">
+                                    <input type="checkbox" id="fin" class="form-check-input tcp" form="start-form"
+                                           name="fin">
                                     <label for="fin" class="form-check-label">
                                         FIN flag
                                     </label>
@@ -230,7 +240,7 @@
                 <h5>WARNING</h5>
                 <h6>
                     Disclaimer: this web page is part of a pilot of the DDoS Clearing House. It is meant to
-                    initiate simulated DDoS traffic to one of the partners of this pilot: {{ partner|upper }}. The
+                    initiate simulated DDoS traffic to one of the organizations of this pilot: {{ organization|upper }}. The
                     goal of sending test traffic is solely to test the DDoS Clearing House; not to send a <i>real</i>
                     DDoS attack to load test the target. Traffic will originate from five identical sources in
                     parallel. In no event is SIDN (Labs) liable for any claim, damages, or other liability as a result

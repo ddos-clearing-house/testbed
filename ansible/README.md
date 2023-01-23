@@ -38,5 +38,5 @@ systemctl restart sshd
 ## Adding a new attack (Ansible part)
 1. In the [setup playbook](setup.yml), add a `task` item with instructions to install the new attack tool (from [git](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/git_module.html#examples), or by [copying](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html#examples) a local file).
 2. Run the setup playbook again (step 5 in the attack nodes setup).
-3. In the [attacks](attacks) directory, add a yml file which runs the attack for a time specified by the variable "duration". Other variables may be included, using the [Jinja2 templating style](https://docs.ansible.com/ansible/2.8/user_guide/playbooks_variables.html#using-variables-with-jinja2). It is easiest to copy a simple attack playbook like [hulk.yml](attacks/hulk.yml) and make changes.
-4. Make sure to also add the attack on the [dashboard side](../dashboard/README.md).
+3. In the [attacks](attacks) directory, add a yml file which runs the attack for a time specified by the variable `duration` onto the target server specified by the variable `target`. It is easiest to copy a simple attack playbook like [hulk.yml](attacks/hulk.yml) and make changes.
+4. Add the attack in the dashboard.env file. See [dashboard instructions](../dashboard/README.md#adding-a-new-attack-dashboard-part).

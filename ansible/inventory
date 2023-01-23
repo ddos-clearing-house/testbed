@@ -1,7 +1,13 @@
 [attackers]
-123.123.123.123
-attack-node2.example.com
+ddosch-node[1:2].sidnlabs.nl
+
+[demo_target]
+target.ddos.blue
 
 [attackers:vars]
+ansible_user=ansible
+ansible_python_interpreter=/usr/bin/python3
+
+[demo_target:vars]
 ansible_user=ansible
 ansible_python_interpreter=/usr/bin/python3
