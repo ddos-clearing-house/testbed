@@ -6,12 +6,15 @@ website_blueprint = Blueprint('website', __name__, template_folder='templates', 
 
 @website_blueprint.route('/')
 def home():
-    return render_template('home.html', partners=os.getenv('PARTNERS').split(':'))
+    return render_template('home.html', organizations=os.getenv('ORGANIZATIONS').split(':'))
 
 
-@website_blueprint.route('/<string:partner>')
-def dashboard(partner: str):
-    if partner.lower() not in [p.lower().replace(' ', '-') for p in os.getenv('PARTNERS').split(':')]:
+@website_blueprint.route('/<string:organization>')
+def dashboard(organization: str):
+    if organization.lower() not in [p.lower().replace(' ', '-') for p in os.getenv('ORGANIZATIONS').split(':')]:
         return abort(404)
-    return render_template("dashboard.html", partner=partner.lower(), fqdn=os.getenv('FQDN'))
+    return render_template('dashboard.html',
+                           organization=organization.lower(),
+                           fqdn=os.getenv('FQDN'),
+                           attacks=os.getenv('ATTACKS').split(':'))
 

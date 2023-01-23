@@ -14,7 +14,7 @@ The testbed consists of
 
 ## 1. [Dashboard](/dashboard)
 
-The dashboard is a Flask application on which partners can initiate (and stop) a simulated attack on **themselves**. 
+The dashboard is a Flask application on which organizations can initiate (and stop) a simulated attack on **themselves**. 
 It is hosted in docker containers using docker-compose. 
 See the [readme](dashboard/README.md) for more information and instructions.
 
@@ -32,7 +32,7 @@ The testbed uses Ansible to setup the attack nodes and to provide them the instr
 
 The attack node setup is done using Ansible; follow this instructions in the corresponding [README](ansible/README.md).
 
-## Adding a partner (user) on the testbed
+## Adding a organization (user) on the testbed
 Follow the instructions in the [dashboard's README](dashboard/README.md).
 
 ## Adding a new attack

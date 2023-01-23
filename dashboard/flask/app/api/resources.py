@@ -1,4 +1,7 @@
+import re
+
 from flask_restful import Resource, reqparse
+import dotenv
 import asyncio
 import os
 
@@ -15,12 +18,11 @@ async def command(cmd):
 
 class StartHping(Resource):
     @staticmethod
-    def post(partner: str):
-        print('POST StartHping')
-        if partner not in [p.lower().replace(' ', '-') for p in os.getenv('PARTNERS').split(':')]:
-            return {'Error': f'partner {partner} is not in the list of partners in this pilot.'}, 400
+    def post(organization: str):
+        if organization not in [p.lower().replace(' ', '-') for p in os.getenv('ORGANIZATIONS').split(':')]:
+            return {'Error': f'organization {organization} is not in the list of organizations in this pilot.'}, 400
 
-        target = os.getenv(f'{partner.upper()}_TARGET')
+        target = os.getenv(f'{organization.upper()}_TARGET')
         protocol_options = {'tcp': '', 'udp': '--udp', 'icmp': '--icmp', 'rawip': '--rawip'}
         speed_options = ['u1000000', 'u100000', 'u10000', 'u1000', 'u100', 'u10', 'u1', 'u0']
 
@@ -41,7 +43,6 @@ class StartHping(Resource):
         parser.add_argument('no_frag', location='form')
         parser.add_argument('more_frag', location='form')
         args = parser.parse_args()
-        print(args)
 
         # Validate arguments and construct hping3 command flags
         flags = ['--quiet']
@@ -104,12 +105,14 @@ class StartHping(Resource):
         print(flags)
 
         try:
-            if partner == 'demo':
-                prime_target = f"""ansible-playbook -i /ansible/inventory /ansible/prime_target.yml --extra-vars "duration={args.duration + 5}" """
+            if organization == 'demo':
+                prime_target = f"""ansible-playbook -i /ansible/inventory /ansible/prime_target.yml --extra-vars \
+                "duration={args.duration + 5}" """
                 print("Priming target")
                 asyncio.run(command(prime_target))
 
-            instructions = f"""ansible-playbook -i /ansible/inventory /ansible/attacks/hping.yml --extra-vars "duration={args.duration} target={target} flags='{flags}'" """
+            instructions = f"""ansible-playbook -i /ansible/inventory /ansible/attacks/hping.yml --extra-vars \
+            "duration={args.duration} target={target} flags='{flags}'" """
             print(f"Running: {instructions}")
             asyncio.run(command(instructions))
         except KeyError:
@@ -120,14 +123,15 @@ class StartHping(Resource):
 
 class StartPlaybook(Resource):
     @staticmethod
-    def start_command(partner: str, playbook: str, protocol: str = ''):
-        if partner not in [p.lower().replace(' ', '-') for p in os.getenv('PARTNERS').split(':')]:
-            return {'Error': f'partner {partner} is not in the list of partners in this pilot.'}, 400
+    def start_command(organization: str, playbook: str):
+        if organization not in [p.lower().replace(' ', '-') for p in os.getenv('ORGANIZATIONS').split(':')]:
+            return {'Error': f'organization {organization} is not in the list of organizations in this pilot.'}, 400
 
-        target = os.getenv(f'{partner.upper()}_TARGET')
+        print(f'command: start {playbook}')
+        target = os.getenv(f'{organization.upper()}_TARGET')
         # Parse arguments
         parser = reqparse.RequestParser()
-        parser.add_argument('duration', type=int, required=True)
+        parser.add_argument('duration', type=int, required=True, location='form')
         args = parser.parse_args()
         print(args)
 
@@ -135,13 +139,14 @@ class StartPlaybook(Resource):
             return {'Error': 'Duration must be a positive integer under 120.'}, 400
 
         try:
-            if partner == 'demo':
-                prime_target = f"""ansible-playbook -i /ansible/inventory /ansible/prime_target.yml --extra-vars "duration={args.duration + 5}" """
+            if organization == 'demo':
+                prime_target = f"""ansible-playbook -i /ansible/inventory /ansible/prime_target.yml --extra-vars \
+                "duration={args.duration + 5}" """
                 print("Priming target")
                 asyncio.run(command(prime_target))
 
             instructions = f'ansible-playbook -i /ansible/inventory /ansible/attacks/{playbook} --extra-vars ' \
-                           f'"duration={args.duration} target={protocol}{target}" '
+                           f'"duration={args.duration} target={target}" '
             print(f"Running: {instructions}")
             asyncio.run(command(instructions))
         except KeyError:
@@ -150,37 +155,28 @@ class StartPlaybook(Resource):
         return {'message': f'Started GoldenEye'}, 200
 
 
-class StartGoldenEye(StartPlaybook):
-    @staticmethod
-    def post(partner: str):
-        StartPlaybook.start_command(partner=partner, playbook='goldeneye.yml', protocol='http://')
+def generate_attack_resource(attack_name: str) -> type[Resource]:
+    assert re.match(r'^\w+$', attack_name), ('Please provide the name of the attack playbook (no spaces or '
+                                             'special characters) and without the file extension. '
+                                             f'Got: "{attack_name}"')
 
+    class StartAttack(StartPlaybook):
 
-class StartHULK(StartPlaybook):
-    @staticmethod
-    def post(partner: str):
-        StartPlaybook.start_command(partner=partner, playbook='hulk.yml', protocol='http://')
+        @staticmethod
+        def post(organization: str):
+            StartPlaybook.start_command(organization=organization, playbook=f'{attack_name}.yml')
 
-
-class StartLOIC(StartPlaybook):
-    @staticmethod
-    def post(partner: str):
-        StartPlaybook.start_command(partner=partner, playbook='loic.yml')
-
-
-class StartSlowloris(StartPlaybook):
-    @staticmethod
-    def post(partner: str):
-        StartPlaybook.start_command(partner=partner, playbook='slowloris.yml')
+    StartAttack.__name__ = f'Start{attack_name}'
+    return StartAttack
 
 
 class Stop(Resource):
     @staticmethod
-    def post(partner: str):
-        if partner not in [p.lower().replace(' ', '-') for p in os.getenv('PARTNERS').split(':')]:
-            return {'error': f'partner {partner} is not in the list of partners in this pilot.'}, 400
+    def post(organization: str):
+        if organization not in [p.lower().replace(' ', '-') for p in os.getenv('ORGANIZATIONS').split(':')]:
+            return {'error': f'organization {organization} is not in the list of organizations in this pilot.'}, 400
 
-        target = os.getenv(f'{partner.upper()}_TARGET')
+        target = os.getenv(f'{organization.upper()}_TARGET')
         target = f'[{target[0]}]{target[1:]}'  # [t]arget (for better grep)
 
         instructions = f'ansible-playbook -i /ansible/inventory /ansible/attacks/stop.yml --extra-vars ' \

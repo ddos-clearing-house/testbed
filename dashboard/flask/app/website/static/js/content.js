@@ -1,4 +1,4 @@
-const partner = $("#nameContainer").data("partner");
+const organization = $("#nameContainer").data("organization");
 const fqdn = $("#fqdnContainer").data("fqdn");
 const durationLabel = $("span#durationValue");
 
@@ -8,20 +8,11 @@ $("#start-button").on('click', (event) => {
     const req = new XMLHttpRequest();
     req.onreadystatechange = handleError;
     const formData = new FormData(document.getElementById('start-form'));
-    if (formData.get("attack") === "http flood") {
-        req.open("POST", `https://api.${fqdn}/${partner}/start/goldeneye`, false);
-    } else if (formData.get("attack") === "hulk") {
-        req.open("POST", `https://api.${fqdn}/${partner}/start/hulk`, false);
-    } else if (formData.get("attack") === "loic") {
-        req.open("POST", `https://api.${fqdn}/${partner}/start/loic`, false);
-    } else if (formData.get("attack") === "slowloris") {
-        req.open("POST", `https://api.${fqdn}/${partner}/start/slowloris`, false);
-    } else if (formData.get("attack") === "custom") {
-        req.open("POST", `https://api.${fqdn}/${partner}/start/hping`, false);
-    } else {
-        return;
-    }
+
+    req.open("POST", `https://api.${fqdn}/${organization}/start/${formData.get("attack")}`, false);
+
     req.withCredentials = true;
+    console.log(formData)
     req.send(formData);
 
     // Count down alert box
@@ -51,7 +42,7 @@ $("#stop-button").on('click', (event) => {
     event.preventDefault();
     const req = new XMLHttpRequest();
     req.onreadystatechange = handleError;
-    req.open("POST", `https://api.${fqdn}/${partner}/stop`, true);
+    req.open("POST", `https://api.${fqdn}/${organization}/stop`, true);
     req.withCredentials = true;
     req.send();
     $("#staffic-stopped-alert").removeClass("collapse").delay(2500).queue(function (next) {
@@ -195,7 +186,7 @@ $("select#protocol").on('change', function () {
     }
 }).change();
 
-// Disable customization column for custom packest when using HTTP flood.
+// Disable customization column for hping packets when using other attack types.
 $("select#attack").on('change', function () {
     const val = $(this).val();
     const protocolInput = $("select#protocol");
@@ -208,7 +199,7 @@ $("select#attack").on('change', function () {
     const icmpInput = $(".icmp");
     const rawipInput = $(".rawip");
 
-    if (val !== "custom") {
+    if (val !== "hping") {
         tcpInput.attr('disabled', true);
         udpInput.attr('disabled', true);
         icmpInput.attr('disabled', true);

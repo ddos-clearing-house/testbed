@@ -6,5 +6,5 @@
 
   tasks:
     - name: Run GoldenEye (HTTP flood)
-      shell: "timeout {{ [duration | int, 120] | min }}s /opt/goldeneye/goldeneye.py {{ target }} -s 50"
+      shell: "timeout {{ [duration | int, 120] | min }}s /opt/goldeneye/goldeneye.py http://{{ target }} -s 50"
       ignore_errors: true

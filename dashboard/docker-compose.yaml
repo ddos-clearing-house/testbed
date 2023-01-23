@@ -18,6 +18,8 @@ services:
 
   nginx:
     image: nginx
+    depends_on:
+      - flask
     container_name: nginx
     restart: unless-stopped
     volumes:

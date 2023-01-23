@@ -6,5 +6,5 @@
 
   tasks:
     - name: Run HULK (HTTP Unbearable Load King)
-      shell: "timeout {{ [duration | int, 120] | min }}s /opt/hulk/hulk -site {{ target }}"
+      shell: "timeout {{ [duration | int, 120] | min }}s /opt/hulk/hulk -site http://{{ target }}"
       ignore_errors: true
